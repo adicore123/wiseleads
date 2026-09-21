@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  phone           String
+  address         String?
+  area            String?
+  contactPerson   String?
+  status          String    @default("חדש")
+  lastCallOutcome String?
+  callAnswer      String?   // 'ענה' | 'לא ענה'
+  interest        String?   // 'מעוניין' | 'לא מעוניין'
+  worthInvesting  String?   // 'שווה להשקיע' | 'לא שווה'
+  callAgain       String?   // 'להתקשר' | 'לא להתקשר'
+  temperature     String?   // 'cold' | 'warm' | 'hot' | 'urgent'
+  followUpDate    DateTime?
+  scheduledTime   String?   // HH:mm format, e.g. "14:30"
+  notes           Note[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Note {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  text           String
+  leadId         String    @db.ObjectId
+  outcome        String?   // Outcome e.g. "ענה והתעניין", "ביקש הצעת מחיר"
+  callAnswer     String?   // 'ענה' | 'לא ענה'
+  interest       String?   // 'מעוניין' | 'לא מעוניין'
+  worthInvesting String?   // 'שווה להשקיע' | 'לא שווה'
+  callAgain      String?   // 'להתקשר' | 'לא להתקשר'
+  contactPerson  String?   // Contact person talked to in this call
+  temperature    String?   // 'cold' | 'warm' | 'hot' | 'urgent'
+  nextAction     String?   // What needs to be done next
+  scheduledTime  String?   // Follow up time if scheduled
+  lead           Lead      @relation(fields: [leadId], references: [id])
+  createdAt      DateTime  @default(now())
+}
